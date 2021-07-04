@@ -44,7 +44,7 @@ export default {
       months: "",
       tax: "",
       total: 0,
-      m1: "meses",
+      m1: "meses"
     };
   },
   methods: {
@@ -56,7 +56,7 @@ export default {
       let init;
       let tax = parseFloat(this.tax / 100);
       let months;
-      let value = parseFloat(this.value)
+      let value = parseFloat(this.value);
       let total = 0;
 
       if (this.init === "") {
@@ -65,23 +65,28 @@ export default {
         init = parseFloat(this.init);
       }
 
-      total = init + init * tax;
       if (this.m1 === "meses") {
-        months = parseFloat(this.months)
+        months = parseFloat(this.months);
       } else {
         months = parseFloat(this.months) * 12;
       }
 
-      console.log(init + "\n");
-      console.log(tax + "\n");
-      console.log(months + "\n");
-      console.log(value + "\n");
-      console.log(total + "\n");
+      //console.log(init + "\n");
+      //console.log(tax + "\n");
+      //console.log(months + "\n");
+      //console.log(value + "\n");
 
-      for (let i = 0; i < months; i++) {
-        console.log(total + "\n");
+      total = init;
+
+      for (let i = 1; i < months; i++) {
         total = total + total * tax + value;
       }
+
+      total = total + total * tax;
+      //console.log(total + "\n");
+
+      this.total = total.toFixed(2).replace('.',',').replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+
     },
     change() {
       this.m1 === "meses" ? (this.m1 = "anos") : (this.m1 = "meses");
