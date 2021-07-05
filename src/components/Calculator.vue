@@ -11,9 +11,16 @@
       v-model="value"
       placeholder="  valor dos aportes/mês"
       class="input"
+      id="iptValue"
     />
     <div class="month">
-      <input type="number" v-model="months" :placeholder="m1" class="monthI" />
+      <input
+        type="number"
+        v-model="months"
+        :placeholder="m1"
+        class="monthI"
+        id="iptMonths"
+      />
 
       <button class="btnChange" @click="change">
         <svg viewBox="-3 0 30 24">
@@ -28,9 +35,26 @@
       v-model="tax"
       placeholder="  tax  % a.m."
       class="input"
+      id="iptTax"
     />
     <button class="btn" @click="calc">calc</button>
     <h1 class="result">R${{ total }}</h1>
+
+    <div id="percent">
+      <div id="perc1"></div>
+    </div>
+
+    <div v-if="total" class="finalPresentation">
+      <div style="display: flex; flex-direction: row; align-items: center;">
+        <div style="width: 10px; height: 10px; background-color: rgb(134, 4, 4); margin-right: 5px;"></div>
+        <div>Total investido: R$
+        {{ finalInvestedValue }}</div>
+      </div>
+      <div style="display: flex; flex-direction: row; align-items: center;">
+        <div style="width: 10px; height: 10px; background-color: rgb(73, 202, 159); margin-right: 5px;"></div>
+        <div>Ganhos juros: R$ {{finalComp}}</div>
+      </div>      
+    </div>
   </div>
 </template>
 
@@ -44,12 +68,30 @@ export default {
       months: "",
       tax: "",
       total: 0,
-      m1: "meses"
+      m1: "meses",
+      totaltax: 0,
+      finalInvestedValue: "",
+      finalComp: ""
     };
   },
   methods: {
     calc() {
+      document.getElementById("iptValue").style.border = "none";
+      document.getElementById("iptMonths").style.border = "none";
+      document.getElementById("iptTax").style.border = "none";
+
       if (!this.value || !this.months || !this.tax) {
+        if (!this.value) {
+          document.getElementById("iptValue").style.border = "solid 1px red";
+        }
+
+        if (!this.months) {
+          document.getElementById("iptMonths").style.border = "solid 1px red";
+        }
+
+        if (!this.tax) {
+          document.getElementById("iptTax").style.border = "solid 1px red";
+        }
         return;
       }
 
@@ -70,23 +112,34 @@ export default {
       } else {
         months = parseFloat(this.months) * 12;
       }
-
-      //console.log(init + "\n");
-      //console.log(tax + "\n");
-      //console.log(months + "\n");
-      //console.log(value + "\n");
-
+      //this.months = months;
       total = init;
+      let totaltax = parseFloat(0);
 
-      for (let i = 1; i < months; i++) {
+      for (let i = 0; i < months; i++) {
+        totaltax += total * tax;
         total = total + total * tax + value;
       }
 
       total = total + total * tax;
+      totaltax += total * tax;
       //console.log(total + "\n");
 
-      this.total = total.toFixed(2).replace('.',',').replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+      console.log(totaltax);
 
+      this.totaltax = totaltax;
+
+      this.total = total
+        .toFixed(2)
+        .replace(".", ",")
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+
+      let widthPercentBar = 300 - (totaltax / total) * 300;
+      document.getElementById("perc1").style.width = `${widthPercentBar}px`;
+
+      this.finalInvestedValue = (parseFloat(init) + (parseFloat(months) * parseFloat(value))).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+      this.finalComp = parseFloat(totaltax).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+      //console.log(widthPercentBar);
     },
     change() {
       this.m1 === "meses" ? (this.m1 = "anos") : (this.m1 = "meses");
@@ -159,5 +212,25 @@ export default {
 .btnChange:active,
 .btn:active {
   background-color: rgb(109, 57, 34);
+}
+
+#percent {
+  height: 20px;
+  width: 300px;
+  border: solid 1px black;
+  display: flex;
+  flex-direction: row;
+  background-color: rgb(73, 202, 159);
+}
+
+#perc1 {
+  width: 300px;
+  height: 20px;
+  background-color: rgb(134, 4, 4);
+}
+
+.finalPresentation{
+  margin: 20px 0 0 0;
+  font-size: 1.2em;
 }
 </style>
