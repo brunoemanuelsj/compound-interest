@@ -1,43 +1,95 @@
 <template>
   <div class="app">
-    <input
-      type="number"
-      v-model="init"
-      placeholder="  aporte inicial"
-      class="input"
-    />
-    <input
-      type="number"
-      v-model="value"
-      placeholder="  valor dos aportes/mês"
-      class="input"
-      id="iptValue"
-    />
-    <div class="month">
-      <input
-        type="number"
-        v-model="months"
-        :placeholder="m1"
-        class="monthI"
-        id="iptMonths"
-      />
+    <h2>Simular juros compostos:</h2>
 
-      <button class="btnChange" @click="change">
-        <svg viewBox="-3 0 30 24">
-          <path
-            d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"
-          ></path>
-        </svg>
-      </button>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 35px;
+      "
+    >
+      <h5 style="margin: 0 0 0 0" v-if="init">Aporte inicial:</h5>
+      <input
+        style="margin-top: 0px"
+        type="number"
+        v-model="init"
+        placeholder="  R$  Aporte inicial"
+        class="input"
+      />
     </div>
-    <input
+
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 35px;
+      "
+    >
+      <h5 style="margin: 0 0 0 0" v-if="value">
+        Valor dos aportes mensais:
+      </h5>
+      <input
+        style="margin-top: 0px"
+        type="number"
+        v-model="value"
+        placeholder="  R$  Valor dos aportes mensais"
+        class="input"
+        id="iptValue"
+      />
+    </div>
+
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 35px;
+      "
+    >
+      <h5 style="margin: 0 0 0 0" v-if="months">Período em {{ m1 }}:</h5>
+      <div class="month" style="margin-top: 0">
+        <input
+          style="margin-top: 0px"
+          type="number"
+          v-model="months"
+          :placeholder="m1"
+          class="monthI"
+          id="iptMonths"
+        />
+        <button class="btnChange" @click="change">
+          <svg viewBox="-3 0 30 24">
+            <path
+              d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 35px;
+      "
+    >
+      <h5 style="margin: 0 0 0 0" v-if="tax">Taxa de juros em % ao mês:</h5>
+      <input
+      style="margin-top: 0px"
       type="number"
       v-model="tax"
-      placeholder="  tax  % a.m."
+      placeholder="  taxa de juros em % ao mês"
       class="input"
       id="iptTax"
     />
-    <button class="btn" @click="calc">calc</button>
+    </div>
+
+    
+    <button class="btn" @click="calc">calcular</button>
     <h1 class="result">R${{ total }}</h1>
 
     <div id="percent">
@@ -45,15 +97,28 @@
     </div>
 
     <div v-if="total" class="finalPresentation">
-      <div style="display: flex; flex-direction: row; align-items: center;">
-        <div style="width: 10px; height: 10px; background-color: rgb(134, 4, 4); margin-right: 5px;"></div>
-        <div>Total investido: R$
-        {{ finalInvestedValue }}</div>
+      <div style="display: flex; flex-direction: row; align-items: center">
+        <div
+          style="
+            width: 10px;
+            height: 10px;
+            background-color: rgb(134, 4, 4);
+            margin-right: 5px;
+          "
+        ></div>
+        <div>Total investido: R$ {{ finalInvestedValue }}</div>
       </div>
-      <div style="display: flex; flex-direction: row; align-items: center;">
-        <div style="width: 10px; height: 10px; background-color: rgb(73, 202, 159); margin-right: 5px;"></div>
-        <div>Ganhos juros: R$ {{finalComp}}</div>
-      </div>      
+      <div style="display: flex; flex-direction: row; align-items: center">
+        <div
+          style="
+            width: 10px;
+            height: 10px;
+            background-color: rgb(73, 202, 159);
+            margin-right: 5px;
+          "
+        ></div>
+        <div>Ganhos juros: R$ {{ finalComp }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -71,7 +136,7 @@ export default {
       m1: "meses",
       totaltax: 0,
       finalInvestedValue: "",
-      finalComp: ""
+      finalComp: "",
     };
   },
   methods: {
@@ -113,20 +178,20 @@ export default {
         months = parseFloat(this.months) * 12;
       }
       //this.months = months;
-      total = init;
+      total = init + init * tax + value;
+
       let totaltax = parseFloat(0);
 
-      for (let i = 0; i < months; i++) {
-        totaltax += total * tax;
+      for (let i = 1; i < months; i++) {
         total = total + total * tax + value;
       }
 
-      total = total + total * tax;
-      totaltax += total * tax;
+      //total = total + total * tax;
       //console.log(total + "\n");
 
-      console.log(totaltax);
-
+      totaltax =
+        total - (parseFloat(init) + parseFloat(months) * parseFloat(value));
+      //console.log(totaltax);
       this.totaltax = totaltax;
 
       this.total = total
@@ -137,8 +202,17 @@ export default {
       let widthPercentBar = 300 - (totaltax / total) * 300;
       document.getElementById("perc1").style.width = `${widthPercentBar}px`;
 
-      this.finalInvestedValue = (parseFloat(init) + (parseFloat(months) * parseFloat(value))).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
-      this.finalComp = parseFloat(totaltax).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+      this.finalInvestedValue = (
+        parseFloat(init) +
+        parseFloat(months) * parseFloat(value)
+      )
+        .toFixed(2)
+        .replace(".", ",")
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+      this.finalComp = parseFloat(totaltax)
+        .toFixed(2)
+        .replace(".", ",")
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
       //console.log(widthPercentBar);
     },
     change() {
@@ -229,7 +303,7 @@ export default {
   background-color: rgb(134, 4, 4);
 }
 
-.finalPresentation{
+.finalPresentation {
   margin: 20px 0 0 0;
   font-size: 1.2em;
 }
